@@ -1,4 +1,4 @@
-package br.com.gft.istemaleilao.test;
+package br.com.gft.istemaleilao.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +11,7 @@ import br.com.gft.istemaleilao.domain.Leilao;
 import br.com.gft.istemaleilao.domain.Usuario;
 import br.com.gft.istemaleilao.service.Avaliador;
 
-public class TesteDoAvaliador {
+public class AvaliadorTest {
 	
 	@Test
 	public void deveEntenderLancesEmOrdemCrescente() {
