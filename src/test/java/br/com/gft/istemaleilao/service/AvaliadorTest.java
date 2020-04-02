@@ -61,8 +61,11 @@ public class AvaliadorTest {
 		leiloeiro.avalia(leilao);
 
 		// validacao
-		assertEquals(3000.0, leiloeiro.getMaiorLance(), 0.00001);
-		assertEquals(1000.0, leiloeiro.getMenorLance(), 0.00001);
+	//	assertEquals(3000.0, leiloeiro.getMaiorLance(), 0.00001);
+		assertThat(leiloeiro.getMaiorLance(), equalTo(3000.0));
+	//	assertEquals(1000.0, leiloeiro.getMenorLance(), 0.00001);
+		assertThat(leiloeiro.getMenorLance(), equalTo(1000.0));
+
 
 	}
 
@@ -76,8 +79,11 @@ public class AvaliadorTest {
 		leiloeiro.avalia(leilao);
 
 		// validacao
-		assertEquals(1000.0, leiloeiro.getMaiorLance(), 0.00001);
-		assertEquals(1000.0, leiloeiro.getMenorLance(), 0.00001);
+//		assertEquals(1000.0, leiloeiro.getMaiorLance(), 0.00001);
+		assertThat(leiloeiro.getMaiorLance(), equalTo(1000.0));
+//		assertEquals(1000.0, leiloeiro.getMenorLance(), 0.00001);
+		assertThat(leiloeiro.getMenorLance(), equalTo(1000.0));
+
 
 	}
 
