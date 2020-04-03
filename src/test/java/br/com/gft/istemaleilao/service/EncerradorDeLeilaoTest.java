@@ -1,7 +1,7 @@
 package br.com.gft.istemaleilao.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +16,7 @@ import org.junit.Test;
 import br.com.gft.istemaleilao.builder.CriadorDeLeilao;
 import br.com.gft.istemaleilao.dao.LeilaoDao;
 import br.com.gft.istemaleilao.domain.Leilao;
+import br.com.gft.istemaleilao.email.Carteiro;
 
 public class EncerradorDeLeilaoTest {
 	
@@ -32,7 +33,9 @@ public class EncerradorDeLeilaoTest {
 		
 		when(daoFalso.correntes()).thenReturn(leiloesAntigos);
 		
-		EncerradorDeLeilao encerrador = new EncerradorDeLeilao(daoFalso);
+		Carteiro carteiroFalso = mock(Carteiro.class);
+		
+		EncerradorDeLeilao encerrador = new EncerradorDeLeilao(daoFalso, carteiroFalso);
 				encerrador.encerra();
 				
 				assertEquals(2, encerrador.getTotalEncerrados());
@@ -51,10 +54,38 @@ public class EncerradorDeLeilaoTest {
 		
 		when(daoFalso.correntes()).thenReturn(Arrays.asList(leilao1));
 		
-		EncerradorDeLeilao encerrador = new EncerradorDeLeilao(daoFalso);
+		Carteiro carteiroFalso = mock(Carteiro.class);
+		
+		EncerradorDeLeilao encerrador = new EncerradorDeLeilao(daoFalso, carteiroFalso);
 		encerrador.encerra();
 		
 		verify(daoFalso, times(1)).atualiza(leilao1);
+	}
+	
+	@Test
+	public void deveContinuarExecuçãoMesmoQuandoODaoFalha() throws Exception {
+		Calendar antiga = Calendar.getInstance();
+		antiga.set(199, 1, 20);
+		
+		Leilao leilao1 = new CriadorDeLeilao().para("TV 4K").naData(antiga).constroi();
+		Leilao leilao2 = new CriadorDeLeilao().para("Geladeira").naData(antiga).constroi();
+		
+		LeilaoDao daoFalso = mock(LeilaoDao.class);
+		Carteiro carteiroFalso = mock(Carteiro.class);
+		
+		when(daoFalso.correntes()).thenReturn(Arrays.asList(leilao1, leilao2));
+		doThrow(new RuntimeException()).when(daoFalso).atualiza(leilao1);
+		
+		EncerradorDeLeilao encerrador = new EncerradorDeLeilao(daoFalso, carteiroFalso);
+		encerrador.encerra();
+		
+		verify(daoFalso).atualiza(leilao2);
+		verify(carteiroFalso).envia(leilao2);
+		
+		verify(carteiroFalso, times(0)).envia(leilao1);
+
+		
+		
 	}
 
 }
